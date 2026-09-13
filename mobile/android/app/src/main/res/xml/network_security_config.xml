@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The sync server is plain HTTP (no TLS) — same accepted tradeoff already in
+  use for the project's Syncplay server on the same free-tier VM. Android
+  blocks cleartext traffic by default since API 28, so this narrowly allows
+  it for just that one IP instead of the whole app. If the VM's ephemeral IP
+  ever changes, update it here too (see README for where else it's referenced).
+-->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">35.226.170.192</domain>
+    </domain-config>
+</network-security-config>

@@ -1,0 +1,54 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "mobile/**"
+      - ".github/workflows/build-android.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write # to publish/update the "android-latest" release with the APK attached
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Install JS deps
+        working-directory: mobile
+        run: npm ci
+
+      - name: Sync web assets into the native project
+        working-directory: mobile
+        run: npx cap sync android
+
+      - name: Build debug APK
+        working-directory: mobile/android
+        run: bash gradlew assembleDebug --no-daemon
+
+      - name: Publish to the android-latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          APK="mobile/android/app/build/outputs/apk/debug/app-debug.apk"
+          ls -la "$APK"
+          gh release delete android-latest --yes --cleanup-tag || true
+          gh release create android-latest "$APK" \
+            --repo "${{ github.repository }}" \
+            --title "Karara Sound Index (Android)" \
+            --notes "Auto-built from commit ${{ github.sha }}. This is a debug build (unsigned, but installable) — you'll need to allow \"install unknown apps\" for whatever app you use to open the downloaded file."

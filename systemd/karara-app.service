@@ -1,0 +1,23 @@
+[Unit]
+Description=Karara Sound Index web app (static site + upload API)
+After=network.target
+
+[Service]
+Type=simple
+User=karara
+Group=karara
+WorkingDirectory=/opt/karara-app/current/app
+EnvironmentFile=-/etc/karara/app.env
+Environment=KARARA_DATA_DIR=/opt/karara-data
+Environment=KARARA_STATIC_DIR=/opt/karara-app/current/app/static
+ExecStart=/opt/karara-app/current/venv/bin/python /opt/karara-app/current/app/serve.py
+Restart=on-failure
+RestartSec=5
+MemoryMax=300M
+NoNewPrivileges=true
+ProtectSystem=strict
+PrivateTmp=true
+ReadWritePaths=/opt/karara-data
+
+[Install]
+WantedBy=multi-user.target

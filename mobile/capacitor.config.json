@@ -1,0 +1,10 @@
+{
+  "appId": "br.karara.soundindex",
+  "appName": "Karara Sound Index",
+  "webDir": "www",
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
+}

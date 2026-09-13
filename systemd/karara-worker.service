@@ -1,0 +1,22 @@
+[Unit]
+Description=Karara Sound Index queue worker (ffmpeg extraction, one job at a time)
+After=network.target
+
+[Service]
+Type=simple
+User=karara
+Group=karara
+WorkingDirectory=/opt/karara-app/current/app
+Environment=KARARA_DATA_DIR=/opt/karara-data
+ExecStart=/opt/karara-app/current/venv/bin/python /opt/karara-app/current/app/worker.py
+Restart=on-failure
+RestartSec=5
+Nice=10
+MemoryMax=500M
+NoNewPrivileges=true
+ProtectSystem=strict
+PrivateTmp=true
+ReadWritePaths=/opt/karara-data
+
+[Install]
+WantedBy=multi-user.target
